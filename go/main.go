@@ -13,8 +13,12 @@ import (
 )
 
 const (
-	VERSION = "0.0.4"
-	NAME    = "Cloudflare Wrangler Proxy"
+	VERSION   = "0.0.4"
+	NAME      = "Cloudflare Wrangler Proxy"
+	URL       = "https://github.com/GSCloud/cf"
+	BOLD      = "\033[1m"
+	UNDERLINE = "\033[4m"
+	RESET     = "\033[0m"
 )
 
 func main() {
@@ -116,16 +120,17 @@ func openBrowser(url string) {
 
 // print help
 func printHelp() {
-	fmt.Printf(NAME+" v%s\n", VERSION)
+	fmt.Printf("%s"+NAME+" v%s%s\n", BOLD, VERSION, RESET)
+	fmt.Printf("%s%s%s\n\n", UNDERLINE, URL, RESET)
 	fmt.Println("Usage: cf [command] [options]")
 	fmt.Println("\nGlobal options:")
-	fmt.Println("  -U, --update     Update the Go binary and the Docker image")
-	fmt.Println("  -V, --version    Show version information")
-	fmt.Println("  -h, --help       Show this help message")
+	fmt.Println("  -U, --update     🌞 Update the Docker image and Go binary")
+	fmt.Println("  -V, --version    💁 Show version information")
+	fmt.Println("  -h, --help       📄 Show this help information")
 	fmt.Println("\nCustom commands:")
-	fmt.Println("  docs             Open Cloudflare documentation in a browser")
-	fmt.Println("  purgecache       Purge specific cache (planned)")
-	fmt.Println("  purgeallcache    Purge all caches (planned)")
+	fmt.Println("  docs \t\t\t Open Cloudflare documentation in a browser")
+	fmt.Println("  purgecache <domain> \t Purge specific cache (TBD)")
+	fmt.Println("  purgecacheall \t Purge all caches (TBD)")
 	fmt.Println("\nAll other commands are passed directly to Cloudflare Wrangler.")
 }
 
@@ -144,11 +149,9 @@ func runUpdate2() {
 	fmt.Println("📡 Updating Go binary ...")
 	updateURL := fmt.Sprintf("https://github.com/GSCloud/cf/raw/refs/heads/master/cf?t=%d", time.Now().Unix())
 	if err := doSelfUpdate(updateURL); err != nil {
-		//fmt.Printf("❌ Error: binary update skipped - %v\n", err)
 	} else {
 		fmt.Println("♥️ Binary updated to the latest version.")
 	}
-	fmt.Println("✅ Done.")
 }
 
 // self-updater, main
@@ -159,11 +162,8 @@ func doSelfUpdate(url string) error {
 	}
 	fmt.Printf("Binary updater path: %s.\n", exePath)
 
-	// 1. Místo otevírání souboru zkusíme, jestli máme právo zápisu do ADRESÁŘE
-	// To je to, co skutečně potřebujeme pro os.Rename
 	tempPath := exePath + ".tmp"
 
-	// Zkusíme stáhnout update
 	resp, err := http.Get(url)
 	if err != nil {
 		fmt.Printf("❌ Download error: %v\n", err)
@@ -175,8 +175,6 @@ func doSelfUpdate(url string) error {
 		return fmt.Errorf("server returned %d", resp.StatusCode)
 	}
 
-	// 2. Zapíšeme do .tmp souboru
-	// Tady uvidíš, jestli sudo funguje - pokud ne, vyhodí to chybu tady
 	f, err := os.OpenFile(tempPath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0755)
 	if err != nil {
 		fmt.Printf("❌ Error: Cannot create temp file %s. Try running with sudo.\n", tempPath)
@@ -189,15 +187,10 @@ func doSelfUpdate(url string) error {
 	}
 	f.Close()
 
-	// 3. MAGIE: Odstraníme starou binárku (unlink)
-	// V Linuxu to jde, i když proces běží!
 	os.Remove(exePath)
-
-	// 4. Přesuneme novou binárku na původní místo
 	if err := os.Rename(tempPath, exePath); err != nil {
 		fmt.Printf("❌ Error: Final rename failed: %v\n", err)
 		return err
 	}
-
 	return nil
 }

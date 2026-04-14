@@ -9,10 +9,11 @@ import (
 	"os/signal"
 	"runtime"
 	"syscall"
+	"time"
 )
 
 const (
-	VERSION = "0.0.3"
+	VERSION = "0.0.4"
 	NAME    = "Cloudflare Wrangler Proxy"
 )
 
@@ -141,7 +142,7 @@ func runUpdate1() {
 // self-updater, part 2
 func runUpdate2() {
 	fmt.Println("📡 Updating Go binary ...")
-	updateURL := "https://github.com/GSCloud/cf/raw/refs/heads/master/cf"
+	updateURL := fmt.Sprintf("https://github.com/GSCloud/cf/raw/refs/heads/master/cf?t=%d", time.Now().Unix())
 	if err := doSelfUpdate(updateURL); err != nil {
 		//fmt.Printf("❌ Error: binary update skipped - %v\n", err)
 	} else {

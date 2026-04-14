@@ -107,7 +107,7 @@ func openBrowser(url string) {
 }
 
 func runUpdate() {
-	fmt.Println("🚀 Updating Wrangler proxy ...")
+	fmt.Printf("🚀 Updating %s ...\n", NAME)
 	cmd := exec.Command("docker", "pull", "gscloudcz/wrangler-proxy:latest")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr

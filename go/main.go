@@ -11,6 +11,7 @@ import (
 
 const (
 	VERSION = "0.0.1"
+	NAME    = "GSC Cloudflare Wrangler Proxy"
 )
 
 func main() {
@@ -22,7 +23,7 @@ func main() {
 	arg := os.Args[1]
 	switch arg {
 	case "-V", "--version":
-		fmt.Printf("GSC Wrangler Proxy v%s\n", VERSION)
+		fmt.Printf(NAME+" v%s\n", VERSION)
 		return
 	case "-U", "--update":
 		runUpdate()
@@ -106,7 +107,7 @@ func openBrowser(url string) {
 }
 
 func runUpdate() {
-	fmt.Println("🚀 Updating GSC Wrangler ...")
+	fmt.Println("🚀 Updating Wrangler proxy ...")
 	cmd := exec.Command("docker", "pull", "gscloudcz/wrangler-proxy:latest")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -115,7 +116,7 @@ func runUpdate() {
 }
 
 func printHelp() {
-	fmt.Printf("GS CLOUD Wrangler Proxy v%s\n", VERSION)
+	fmt.Printf(NAME+" v%s\n", VERSION)
 	fmt.Println("Usage: cf [command] [options]")
 	fmt.Println("\nGlobal options:")
 	fmt.Println("  -U, --update     Update the Go binary and the Docker image")

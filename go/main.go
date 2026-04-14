@@ -13,12 +13,14 @@ import (
 )
 
 const (
-	VERSION   = "0.0.4"
-	NAME      = "Cloudflare Wrangler Proxy"
-	URL       = "https://github.com/GSCloud/cf"
+	VERSION = "0.0.5"
+	NAME    = "Cloudflare Wrangler Proxy"
+	URL     = "https://github.com/GSCloud/cf"
+
+	// terminal
 	BOLD      = "\033[1m"
-	UNDERLINE = "\033[4m"
 	RESET     = "\033[0m"
+	UNDERLINE = "\033[4m"
 )
 
 func main() {
@@ -129,7 +131,7 @@ func printHelp() {
 	fmt.Println("  -h, --help       📄 Show this help information")
 	fmt.Println("\nCustom commands:")
 	fmt.Println("  docs \t\t\t Open Cloudflare documentation in a browser")
-	fmt.Println("  purgecache <domain> \t Purge specific cache (TBD)")
+	fmt.Println("  purgecache [domain] \t Purge specific cache (TBD)")
 	fmt.Println("  purgecacheall \t Purge all caches (TBD)")
 	fmt.Println("\nAll other commands are passed directly to Cloudflare Wrangler.")
 }

@@ -10,7 +10,7 @@ Cloudflare's Wrangler CLI often introduces breaking changes or requires specific
 * **Zero-Footprint:** No Node.js or npm required on the host machine.
 * **Version Pinning:** Guaranteed consistency across different development environments.
 * **Automated Updates:** A simple `-U` flag updates both the binary and the underlying Docker image.
-* **Custom Extensibility:** Ability to intercept commands and add custom GS CLOUD logic before passing them to Wrangler.
+* **Custom Extensibility:** Ability to intercept commands and add custom logic before passing them to Wrangler.
 
 ## Prerequisites
 
@@ -19,14 +19,9 @@ Cloudflare's Wrangler CLI often introduces breaking changes or requires specific
 
 ## Installation & Usage
 
-Instead of running `npx wrangler`, use the compiled binary (e.g., `cf`):
-
 ```bash
-# Start a local development server for Pages
-cf pages dev dist
+# Show version
+cf -V
 
-# Deploy your project
-cf pages deploy dist
-
-# Update the proxy and the Docker image
+# Self-updater
 cf -U

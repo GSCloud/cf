@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	VERSION = "0.0.1"
+	VERSION = "0.0.2"
 	NAME    = "Cloudflare Wrangler Proxy"
 )
 
@@ -128,7 +128,7 @@ func printHelp() {
 	fmt.Println("\nAll other commands are passed directly to Cloudflare Wrangler.")
 }
 
-// self-updater part 1
+// self-updater, part 1
 func runUpdate1() {
 	fmt.Printf("🚀 Updating %s ...\n", NAME)
 	cmd := exec.Command("docker", "pull", "gscloudcz/wrangler-proxy:latest")
@@ -138,19 +138,19 @@ func runUpdate1() {
 	fmt.Println("✅ Done.")
 }
 
-// self-updater part 2
+// self-updater, part 2
 func runUpdate2() {
 	fmt.Println("📡 Updating Go binary ...")
 	updateURL := "https://github.com/GSCloud/cf/raw/refs/heads/master/cf"
 	if err := doSelfUpdate(updateURL); err != nil {
-		fmt.Printf("⚠️ Binary update skipped: %v\n", err)
+		//fmt.Printf("❌ Error: binary update skipped - %v\n", err)
 	} else {
-		fmt.Println("✨ Binary updated to the latest version.")
+		fmt.Println("♥️ Binary updated to the latest version.")
 	}
 	fmt.Println("✅ Done.")
 }
 
-// self-updater
+// self-updater, main
 func doSelfUpdate(url string) error {
 	exePath, err := os.Executable()
 	if err != nil {
@@ -158,34 +158,45 @@ func doSelfUpdate(url string) error {
 	}
 	fmt.Printf("Binary updater path: %s.\n", exePath)
 
-	file, err := os.OpenFile(exePath, os.O_WRONLY, 0666)
-	if err != nil {
-		fmt.Printf("❌ Error: Insufficient permissions to update %s.\n", exePath)
-		fmt.Println("Please run: sudo cf -U")
-		return err
-	}
-	file.Close()
+	// 1. Místo otevírání souboru zkusíme, jestli máme právo zápisu do ADRESÁŘE
+	// To je to, co skutečně potřebujeme pro os.Rename
+	tempPath := exePath + ".tmp"
 
+	// Zkusíme stáhnout update
 	resp, err := http.Get(url)
 	if err != nil {
+		fmt.Printf("❌ Download error: %v\n", err)
 		return err
 	}
 	defer resp.Body.Close()
+
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("Server returned %d", resp.StatusCode)
+		return fmt.Errorf("server returned %d", resp.StatusCode)
 	}
-	tempPath := exePath + ".tmp"
+
+	// 2. Zapíšeme do .tmp souboru
+	// Tady uvidíš, jestli sudo funguje - pokud ne, vyhodí to chybu tady
 	f, err := os.OpenFile(tempPath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0755)
 	if err != nil {
+		fmt.Printf("❌ Error: Cannot create temp file %s. Try running with sudo.\n", tempPath)
 		return err
 	}
+
 	if _, err := io.Copy(f, resp.Body); err != nil {
 		f.Close()
 		return err
 	}
 	f.Close()
+
+	// 3. MAGIE: Odstraníme starou binárku (unlink)
+	// V Linuxu to jde, i když proces běží!
+	os.Remove(exePath)
+
+	// 4. Přesuneme novou binárku na původní místo
 	if err := os.Rename(tempPath, exePath); err != nil {
+		fmt.Printf("❌ Error: Final rename failed: %v\n", err)
 		return err
 	}
+
 	return nil
 }

@@ -28,11 +28,11 @@ func main() {
 		fmt.Printf(NAME+" v%s\n", VERSION)
 		return
 	case "-U", "--update":
+		runUpdate1()
 		if runtime.GOOS != "linux" || runtime.GOARCH != "amd64" {
 			fmt.Printf("❌ Error: Self-updater is only supported on Linux amd64. Current: %s %s\n", runtime.GOOS, runtime.GOARCH)
 			return
 		}
-		runUpdate1()
 		runUpdate2()
 		return
 	case "-h", "--help", "help":
@@ -156,6 +156,16 @@ func doSelfUpdate(url string) error {
 	if err != nil {
 		return err
 	}
+	fmt.Printf("Binary updater path: %s.\n", exePath)
+
+	file, err := os.OpenFile(exePath, os.O_WRONLY, 0666)
+	if err != nil {
+		fmt.Printf("❌ Error: Insufficient permissions to update %s.\n", exePath)
+		fmt.Println("Please run: sudo cf -U")
+		return err
+	}
+	file.Close()
+
 	resp, err := http.Get(url)
 	if err != nil {
 		return err

@@ -8,11 +8,13 @@ all:
 buildwr:
 	@echo "Building Docker container ..."
 	@bash ./build.sh
+	@echo "✅ Done."
 
 build:
 	@echo "🐹 Building Go ..."
 	@cd go && go mod tidy && go build -ldflags="-s -w" -o cf main.go
 	@cp go/cf .
+	@echo "✅ Done."
 
 wr:
 	@bash ./run.sh

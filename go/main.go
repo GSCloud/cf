@@ -14,29 +14,32 @@ const (
 )
 
 func main() {
-	if len(os.Args) > 1 && (os.Args[1] == "-U" || os.Args[1] == "--update") {
-		runUpdate()
+	if len(os.Args) < 2 {
+		printHelp()
 		return
 	}
 
-	if len(os.Args) > 1 && (os.Args[1] == "-V" || os.Args[1] == "--version") {
-		println("Version: " + VERSION)
-		os.Exit(0)
-	}
-
-	if len(os.Args) > 1 {
-		switch os.Args[1] {
-		case "docs":
-			fmt.Println("🌐 Opening Cloudflare Docs on your host system...")
-			openBrowser("https://developers.cloudflare.com/workers/wrangler/commands/")
-			return
-		case "purgecache":
-			// future logic
-			return
-		case "purgeallcache":
-			// future logic
-			return
-		}
+	arg := os.Args[1]
+	switch arg {
+	case "-V", "--version":
+		fmt.Printf("GSC Wrangler Proxy v%s\n", VERSION)
+		return
+	case "-U", "--update":
+		runUpdate()
+		return
+	case "-h", "--help", "help":
+		printHelp()
+		return
+	case "docs":
+		fmt.Println("🌐 Opening Cloudflare Docs on your host system...")
+		openBrowser("https://developers.cloudflare.com/workers/wrangler/commands/")
+		return
+	case "purgecache":
+		// future logic
+		return
+	case "purgeallcache":
+		// future logic
+		return
 	}
 
 	// 2. Příprava Docker příkazu
@@ -109,4 +112,18 @@ func runUpdate() {
 	cmd.Stderr = os.Stderr
 	cmd.Run()
 	fmt.Println("✅ Done.")
+}
+
+func printHelp() {
+	fmt.Printf("GS CLOUD Wrangler Proxy v%s\n", VERSION)
+	fmt.Println("Usage: cf [command] [options]")
+	fmt.Println("\nGlobal options:")
+	fmt.Println("  -U, --update     Update the Go binary and the Docker image")
+	fmt.Println("  -V, --version    Show version information")
+	fmt.Println("  -h, --help       Show this help message")
+	fmt.Println("\nCustom commands:")
+	fmt.Println("  docs             Open Cloudflare documentation in a browser")
+	fmt.Println("  purgecache       Purge specific cache (planned)")
+	fmt.Println("  purgeallcache    Purge all caches (planned)")
+	fmt.Println("\nAll other commands are passed directly to Cloudflare Wrangler.")
 }

@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
+	"runtime"
 	"syscall"
 )
 
@@ -23,6 +24,21 @@ func main() {
 		os.Exit(0)
 	}
 
+	if len(os.Args) > 1 {
+		switch os.Args[1] {
+		case "docs":
+			fmt.Println("🌐 Opening Cloudflare Docs on your host system...")
+			openBrowser("https://developers.cloudflare.com/workers/wrangler/commands/")
+			return
+		case "purgecache":
+			// future logic
+			return
+		case "purgeallcache":
+			// future logic
+			return
+		}
+	}
+
 	// 2. Příprava Docker příkazu
 	cwd, _ := os.Getwd()
 	dockerImage := "gscloudcz/wrangler-proxy:latest"
@@ -38,32 +54,28 @@ func main() {
 		dockerImage,
 	}
 
-	// Přidáme argumenty z CLI (vše za 'cf')
+	// add all args
 	if len(os.Args) > 1 {
 		args = append(args, os.Args[1:]...)
 	}
-
 	cmd := exec.Command("docker", args...)
 
-	// Propojíme standardní vstupy/výstupy
+	// coonect input/output
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
 
-	// 3. Ošetření signálů (Graceful Shutdown)
+	// graceful shutdown
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
 
 	go func() {
 		<-sigChan
-		// Pokud uživatel zmáčkne Ctrl+C, Docker kontejner díky --rm zmizí
-		// ale my můžeme přidat extra cleanup logiku zde
 		os.Exit(0)
 	}()
 
-	// 4. Start!
 	if err := cmd.Run(); err != nil {
-		// Tady ignorujeme chybu exit status 130, což je běžný Ctrl+C exit
+		// ignore exit status 130 = Ctrl+C
 		if exitError, ok := err.(*exec.ExitError); ok && exitError.ExitCode() == 130 {
 			os.Exit(0)
 		}
@@ -72,9 +84,26 @@ func main() {
 	}
 }
 
+func openBrowser(url string) {
+	var err error
+	switch runtime.GOOS {
+	case "linux":
+		err = exec.Command("xdg-open", url).Start()
+	case "darwin":
+		err = exec.Command("open", url).Start()
+	case "windows":
+		err = exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start()
+	default:
+		fmt.Printf("Please open this URL in your browser: %s\n", url)
+	}
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Failed to open browser: %v\n", err)
+	}
+}
+
 func runUpdate() {
-	fmt.Println("🚀 Updating GS CLOUD Wrangler environment...")
-	// Zde pak přidáme tvůj GitHub self-update
+	fmt.Println("🚀 Updating GSC Wrangler ...")
 	cmd := exec.Command("docker", "pull", "gscloudcz/wrangler-proxy:latest")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr

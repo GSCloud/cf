@@ -17,11 +17,18 @@ Cloudflare's Wrangler CLI often introduces breaking changes or requires specific
 * **Docker** (installed and running)
 * **Go** (only if building from source)
 
-## Installation & Usage
+## Installation & Basic Usage
 
 ```bash
-# Show version
+# Show Golang binary version
 cf -V
 
 # Self-updater
 cf -U
+```
+
+## Commands
+
+```bash
+# Show Wrangler version
+cf version

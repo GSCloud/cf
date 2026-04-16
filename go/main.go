@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	VERSION = "0.0.5"
+	VERSION = "0.0.7"
 	NAME    = "Cloudflare Wrangler Proxy"
 	URL     = "https://github.com/GSCloud/cf"
 
@@ -27,6 +27,21 @@ func main() {
 	if len(os.Args) < 2 {
 		printHelp()
 		return
+	}
+
+	// Docker
+	cwd, _ := os.Getwd()
+	dockerImage := "gscloudcz/wrangler-proxy:latest"
+	args := []string{
+		"run", "--rm", "-it",
+		"-w", "/app",
+		"-v", cwd + ":/app",
+		"-v", "/tmp:/tmp",
+		"-e", "CLOUDFLARE_API_TOKEN",
+		"-e", "CLOUDFLARE_ACCOUNT_ID",
+		"-e", "XDG_CONFIG_HOME=/tmp/wrangler-logs",
+		"--network", "host",
+		dockerImage,
 	}
 
 	arg := os.Args[1]
@@ -49,6 +64,22 @@ func main() {
 		fmt.Println("🌐 Opening Cloudflare Docs on your host system ...")
 		openBrowser("https://developers.cloudflare.com/workers/wrangler/commands/")
 		return
+	case "version":
+		// get Wrangler version
+		args = append(args, "--version")
+		cmd := exec.Command("docker", args...)
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		cmd.Stdin = os.Stdin
+		if err := cmd.Run(); err != nil {
+			// ignore exit status 130 = Ctrl+C
+			if exitError, ok := err.(*exec.ExitError); ok && exitError.ExitCode() == 130 {
+				os.Exit(0)
+			}
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
+		return
 	case "purgecache":
 		// future logic
 		return
@@ -57,28 +88,10 @@ func main() {
 		return
 	}
 
-	// Docker command
-	cwd, _ := os.Getwd()
-	dockerImage := "gscloudcz/wrangler-proxy:latest"
-
-	// Docker parameters
-	args := []string{
-		"run", "--rm", "-it",
-		"-v", cwd + ":/app",
-		"-w", "/app",
-		"-e", "CLOUDFLARE_API_TOKEN",
-		"-e", "CLOUDFLARE_ACCOUNT_ID",
-		"--network", "host",
-		dockerImage,
-	}
-
-	// add all args
 	if len(os.Args) > 1 {
 		args = append(args, os.Args[1:]...)
 	}
 	cmd := exec.Command("docker", args...)
-
-	// connector
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = os.Stdin
@@ -102,7 +115,7 @@ func main() {
 	}
 }
 
-// open browser
+// open URL in the browser
 func openBrowser(url string) {
 	var err error
 	switch runtime.GOOS {
@@ -131,29 +144,10 @@ func printHelp() {
 	fmt.Println("  -h, --help       📄 Show this help information")
 	fmt.Println("\nCustom commands:")
 	fmt.Println("  docs \t\t\t Open Cloudflare documentation in a browser")
+	fmt.Println("  version \t\t Wrangler version")
 	fmt.Println("  purgecache [domain] \t Purge specific cache (TBD)")
 	fmt.Println("  purgecacheall \t Purge all caches (TBD)")
 	fmt.Println("\nAll other commands are passed directly to Cloudflare Wrangler.")
-}
-
-// self-updater, part 1
-func runUpdate1() {
-	fmt.Printf("🚀 Updating %s ...\n", NAME)
-	cmd := exec.Command("docker", "pull", "gscloudcz/wrangler-proxy:latest")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	cmd.Run()
-	fmt.Println("✅ Done.")
-}
-
-// self-updater, part 2
-func runUpdate2() {
-	fmt.Println("📡 Updating Go binary ...")
-	updateURL := fmt.Sprintf("https://github.com/GSCloud/cf/raw/refs/heads/master/cf?t=%d", time.Now().Unix())
-	if err := doSelfUpdate(updateURL); err != nil {
-	} else {
-		fmt.Println("♥️ Binary updated to the latest version.")
-	}
 }
 
 // self-updater, main
@@ -195,4 +189,24 @@ func doSelfUpdate(url string) error {
 		return err
 	}
 	return nil
+}
+
+// self-updater, part 1
+func runUpdate1() {
+	fmt.Printf("🚀 Updating %s ...\n", NAME)
+	cmd := exec.Command("docker", "pull", "gscloudcz/wrangler-proxy:latest")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Run()
+	fmt.Println("✅ Done.")
+}
+
+// self-updater, part 2
+func runUpdate2() {
+	fmt.Println("📡 Updating Go binary ...")
+	updateURL := fmt.Sprintf("https://github.com/GSCloud/cf/raw/refs/heads/master/cf?t=%d", time.Now().Unix())
+	if err := doSelfUpdate(updateURL); err != nil {
+	} else {
+		fmt.Println("✅ Binary updated to the latest version.")
+	}
 }

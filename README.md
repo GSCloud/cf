@@ -1,5 +1,7 @@
 # Cloudflare wrangler proxy
 
+[https://github.com/GSCloud/cf](https://github.com/GSCloud/cf)
+
 A lightweight Go-based orchestrator and Docker environment for **Cloudflare wrangler**.  
 This tool isolates the entire Cloudflare development stack, ensuring your host system remains clean of Node.js, npm, or global package bloat.
 
@@ -20,15 +22,20 @@ Cloudflare's wrangler CLI often introduces breaking changes or requires specific
 ## Installation & Basic Usage
 
 ```bash
-# Show Golang binary version
+# Golang binary version
 cf -V
 
-# Self-updater
+# self-updater
 cf -U
 ```
 
 ## Commands
 
 ```bash
-# Show help
+# help
 cf
+```
+
+---
+
+Author: Fred Brooker 💌 <git@gscloud.cz> ⛅️ GS Cloud Ltd. [https://gscloud.cz](https://gscloud.cz)

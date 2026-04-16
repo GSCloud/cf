@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	VERSION = "0.0.7"
+	VERSION = "0.0.8"
 	NAME    = "Cloudflare wrangler proxy"
 	URL     = "https://github.com/GSCloud/cf"
 

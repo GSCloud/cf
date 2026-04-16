@@ -14,7 +14,7 @@ import (
 
 const (
 	VERSION = "0.0.7"
-	NAME    = "Cloudflare Wrangler Proxy"
+	NAME    = "Cloudflare wrangler proxy"
 	URL     = "https://github.com/GSCloud/cf"
 
 	// terminal
@@ -65,7 +65,7 @@ func main() {
 		openBrowser("https://developers.cloudflare.com/workers/wrangler/commands/")
 		return
 	case "version":
-		// get Wrangler version
+		// get wrangler version
 		args = append(args, "--version")
 		cmd := exec.Command("docker", args...)
 		cmd.Stdout = os.Stdout
@@ -144,10 +144,10 @@ func printHelp() {
 	fmt.Println("  -h, --help       📄 Show this help information")
 	fmt.Println("\nCustom commands:")
 	fmt.Println("  docs \t\t\t Open Cloudflare documentation in a browser")
-	fmt.Println("  version \t\t Wrangler version")
+	fmt.Println("  version \t\t wrangler version")
 	fmt.Println("  purgecache [domain] \t Purge specific cache (TBD)")
 	fmt.Println("  purgecacheall \t Purge all caches (TBD)")
-	fmt.Println("\nAll other commands are passed directly to Cloudflare Wrangler.")
+	fmt.Println("\nAll other commands are passed directly to Cloudflare wrangler.")
 }
 
 // self-updater, main

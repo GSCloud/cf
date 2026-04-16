@@ -43,6 +43,7 @@ func main() {
 		"--network", "host",
 		dockerImage,
 	}
+	os.MkdirAll("/tmp/wrangler-logs", 0777)
 
 	arg := os.Args[1]
 	switch arg {
@@ -99,14 +100,12 @@ func main() {
 	// graceful shutdown
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
-
 	go func() {
 		<-sigChan
 		os.Exit(0)
 	}()
 
 	if err := cmd.Run(); err != nil {
-		// ignore exit status 130 = Ctrl+C
 		if exitError, ok := err.(*exec.ExitError); ok && exitError.ExitCode() == 130 {
 			os.Exit(0)
 		}

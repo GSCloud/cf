@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	VERSION = "0.0.8"
+	VERSION = "0.0.9"
 	NAME    = "Cloudflare wrangler proxy"
 	URL     = "https://github.com/GSCloud/cf"
 
@@ -142,11 +142,11 @@ func printHelp() {
 	fmt.Println("  -V, --version    💁 Show version information")
 	fmt.Println("  -h, --help       📄 Show this help information")
 	fmt.Println("\nCustom commands:")
-	fmt.Println("  docs \t\t\t Open Cloudflare documentation in a browser")
-	fmt.Println("  version \t\t wrangler version")
+	fmt.Println("  docs \t\t\t Open Wrangler documentation in a browser")
+	fmt.Println("  version \t\t Dockerized Wrangler version")
 	fmt.Println("  purgecache [domain] \t Purge specific cache (TBD)")
 	fmt.Println("  purgecacheall \t Purge all caches (TBD)")
-	fmt.Println("\nAll other commands are passed directly to Cloudflare wrangler.")
+	fmt.Println("\nAll other commands are proxy passed directly to Cloudflare Wrangler.")
 }
 
 // self-updater, main

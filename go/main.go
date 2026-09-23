@@ -142,8 +142,8 @@ func printHelp() {
 	fmt.Println("  -V, --version    💁 Show version information")
 	fmt.Println("  -h, --help       📄 Show this help information")
 	fmt.Println("\nCustom commands:")
-	fmt.Println("  docs \t\t\t Open Wrangler documentation in a browser")
-	fmt.Println("  version \t\t Dockerized Wrangler version")
+	fmt.Println("  docs \t\t\t\t Open Wrangler documentation in a browser")
+	fmt.Println("  version \t\t\t Dockerized Wrangler version")
 	fmt.Println("  purgecache [domain|all] \t Purge specific edge cache / all caches (TBD)")
 	fmt.Println("\nAll other commands are proxy passed directly to Cloudflare Wrangler.")
 }

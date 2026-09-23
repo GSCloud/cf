@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	VERSION = "0.0.9"
-	NAME    = "Cloudflare wrangler proxy"
+	VERSION = "0.0.10"
+	NAME    = "Cloudflare Wrangler proxy"
 	URL     = "https://github.com/GSCloud/cf"
 
 	// terminal
@@ -66,7 +66,6 @@ func main() {
 		openBrowser("https://developers.cloudflare.com/workers/wrangler/commands/")
 		return
 	case "version":
-		// get wrangler version
 		args = append(args, "--version")
 		cmd := exec.Command("docker", args...)
 		cmd.Stdout = os.Stdout

@@ -5,12 +5,12 @@ DIST_DIR=dist
 GO_DIR=go
 LDFLAGS=-s -w
 
-.PHONY: all build buildwr wr install everything
+.PHONY: all build wrbuild wrangler install everything
 
 all:
-	@echo "build | buildwr | wr | install"
+	@echo "build | wrbuild | wrangler | install"
 
-buildwr:
+wrbuild:
 	@echo "Building Docker container ..."
 	@bash ./build.sh
 	@echo "✅ Done."
@@ -36,7 +36,7 @@ build:
 	@chmod +x $(BINARY_NAME)
 	@echo "✅ Done. Binaries are in ./$(DIST_DIR)/ + local linux '$(BINARY_NAME)' is updated."
 
-wr:
+wrangler:
 	@bash ./run.sh
 
 install:

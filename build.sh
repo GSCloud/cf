@@ -14,6 +14,6 @@ function yes_or_no () {
 }
 
 docker build -t gscloudcz/wrangler-proxy:latest . || exit 1
-docker run -it gscloudcz/wrangler-proxy:latest
+docker run --rm gscloudcz/wrangler-proxy:latest
 
 yes_or_no "Push the image to Docker Hub?" && docker push gscloudcz/wrangler-proxy:latest
